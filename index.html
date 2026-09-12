@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Větrný park Vojtěchov – VR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Montserrat',system-ui,sans-serif;background:#efeae2;color:#222}
+    #landing{position:fixed;inset:0;z-index:9999;background:#efeae2;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;transition:opacity .4s;overflow-y:auto}
+    #landing.hidden{opacity:0;pointer-events:none}
+    .logos{display:flex;align-items:center;justify-content:center;gap:48px;margin-bottom:36px;flex-wrap:wrap}
+    .logos img{height:96px;width:auto;object-fit:contain}
+    .logos .noho{height:64px}
+    h1{font-size:clamp(2.2rem,4.6vw,3.6rem);font-weight:800;letter-spacing:.01em;margin-bottom:10px;text-align:center;color:#0a2540}
+    .subtitle{color:#777;font-size:1rem;margin-bottom:32px;text-align:center;font-weight:400}
+    .modes{display:inline-flex;background:#e2dccf;border-radius:60px;padding:6px;margin-bottom:28px;gap:4px;flex-wrap:wrap;justify-content:center}
+    .mode-btn{padding:12px 26px;font-size:.95rem;border:none;border-radius:60px;cursor:pointer;color:#0a2540;font-weight:700;background:transparent;font-family:inherit;transition:color .15s;letter-spacing:.02em}
+    .mode-btn.active{color:#fff;background:linear-gradient(135deg,#249e6b,#cedc00);box-shadow:0 4px 16px rgba(36,158,107,.35)}
+    .mode-sub{display:block;font-size:.68rem;font-weight:600;opacity:.75;margin-top:2px}
+    .group{display:flex;flex-direction:column;align-items:center;gap:14px;margin-bottom:28px}
+    .group-label{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#999}
+    .buttons{display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:center}
+    .view-btn{padding:18px 40px;font-size:1.1rem;border:none;border-radius:60px;cursor:pointer;color:#fff;font-weight:700;text-transform:uppercase;letter-spacing:.05em;transition:transform .15s,box-shadow .15s;font-family:inherit;background:linear-gradient(135deg,#249e6b,#cedc00);box-shadow:0 6px 24px rgba(36,158,107,.35)}
+    .view-btn:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(36,158,107,.45)}
+    .view-btn.anim{background:linear-gradient(135deg,#0a2540,#1f6f8b);box-shadow:0 6px 24px rgba(10,37,64,.3)}
+    .view-btn.anim:hover{box-shadow:0 10px 32px rgba(10,37,64,.4)}
+    .hint{margin-top:8px;color:#888;font-size:.85rem;text-align:center;max-width:560px;line-height:1.5}
+    .nav{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:.8rem;color:#888;text-decoration:none}
+    .nav:hover{color:#0a2540}
+    #loading-overlay{position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;color:#fff;font-size:1.2rem}
+    #loading-overlay.visible{display:flex}
+    .spinner{width:44px;height:44px;border:4px solid rgba(255,255,255,.15);border-top-color:#cedc00;border-radius:50%;animation:spin .7s linear infinite;margin-right:14px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    #error{position:fixed;left:50%;bottom:64px;transform:translateX(-50%);background:#b22;color:#fff;padding:10px 18px;border-radius:8px;font-size:.9rem;display:none;max-width:90vw;text-align:center;z-index:10000}
+    #error.visible{display:block}
+  </style>
+</head>
+<body>
+
+<div id="landing">
+  <div class="logos">
+    <img class="noho" src="assets/noho-logo.svg" alt="NOHO" onerror="this.style.display='none'">
+    <img src="assets/vojtechov-logo.png" alt="Vojtěchov" onerror="this.style.display='none'">
+  </div>
+  <h1>Větrný park Vojtěchov – VR</h1>
+  <p class="subtitle">Vizualizace větrného parku – statické a animované pohledy</p>
+
+  <div class="group">
+    <span class="group-label">Statické pohledy</span>
+    <div class="modes" role="group" aria-label="Kvalita zobrazení">
+      <button class="mode-btn active" data-mode="webp">Plynulé<span class="mode-sub">WebP · rychlé</span></button>
+      <button class="mode-btn" data-mode="hq">Plná kvalita<span class="mode-sub">WebP · velké</span></button>
+    </div>
+    <div class="buttons">
+      <button class="view-btn" data-view="u-parku">U Parku</button>
+      <button class="view-btn" data-view="spinaci-stanice">Spínací stanice</button>
+      <button class="view-btn" data-view="rozhledna">Rozhledna</button>
+      <button class="view-btn" data-view="pole">Pole</button>
+    </div>
+  </div>
+
+  <div class="group">
+    <span class="group-label">Animované pohledy</span>
+    <div class="buttons">
+      <button class="view-btn anim" data-anim="1" data-view="u-prejezdu">U Přejezdu</button>
+      <button class="view-btn anim" data-anim="1" data-view="spinaci-stanice">Spínací stanice</button>
+      <button class="view-btn anim" data-anim="1" data-view="rozhledna">Rozhledna</button>
+      <button class="view-btn anim" data-anim="1" data-view="pole">Pole</button>
+    </div>
+  </div>
+
+  <p class="hint">Vyberte pohled. V headsetu pak přepínáte mezi pohledy nakloněním páčky ovladače doleva / doprava (statické a animované pohledy se přepínají zvlášť). Panorama se vykresluje pomocí WebXR Layers přímo systémovým kompozitorem.</p>
+  <a class="nav" href="aframe/">klasická verze (A-Frame) →</a>
+</div>
+
+<div id="loading-overlay"><div class="spinner"></div><span>Načítání…</span></div>
+<div id="error"></div>
+
+<script>
+(function(){
+  'use strict';
+
+  var landing = document.getElementById('landing');
+  var loading = document.getElementById('loading-overlay');
+  var errorBox = document.getElementById('error');
+
+  // One entry per location. Still views have webp/hq; animated views have video.
+  var VIEWS = [
+    { id:'u-parku',         webp:'assets/u-parku.webp',         hq:'assets/u-parku-hq.webp' },
+    { id:'spinaci-stanice', webp:'assets/spinaci-stanice.webp', hq:'assets/spinaci-stanice-hq.webp', video:'assets/spinaci-stanice.mp4' },
+    { id:'rozhledna',       webp:'assets/rozhledna.webp',       hq:'assets/rozhledna-hq.webp',       video:'assets/rozhledna.mp4' },
+    { id:'pole',            webp:'assets/pole.webp',            hq:'assets/pole-hq.webp',            video:'assets/pole.mp4' },
+    { id:'u-prejezdu',                                                                               video:'assets/u-prejezdu.mp4' }
+  ];
+
+  var session = null;
+  var refSpace = null;
+  var mode = 'webp';          // 'webp' | 'hq' | 'video'
+  var currentIndex = 0;       // index into VIEWS
+  var switching = false;
+
+  // Image path state.
+  var gl = null, glBinding = null, equirectLayer = null;
+  var currentImg = null, layerW = 0, layerH = 0, redrawFrames = 0;
+  var imageCache = {};
+
+  // Video path state – a single <video> element so only one 8K decoder is ever alive.
+  var mediaBinding = null, videoLayer = null;
+  var videoEl = null;
+
+  // Thumbstick edge detection.
+  var stickArmed = true;
+
+  function isImageMode(){ return mode === 'webp' || mode === 'hq'; }
+
+  // Indices of the views that are available in the current mode (cycled with the thumbstick).
+  function cycleList(){
+    var out = [];
+    for(var i = 0; i < VIEWS.length; i++){
+      if(mode === 'video' ? VIEWS[i].video : VIEWS[i].webp) out.push(i);
+    }
+    return out;
+  }
+
+  function indexOfView(id){
+    for(var i = 0; i < VIEWS.length; i++) if(VIEWS[i].id === id) return i;
+    return 0;
+  }
+
+  function showError(msg, ttl){
+    errorBox.textContent = msg;
+    errorBox.classList.add('visible');
+    clearTimeout(showError._t);
+    showError._t = setTimeout(function(){ errorBox.classList.remove('visible') }, ttl || 6000);
+  }
+
+  function loadImage(src){
+    if(imageCache[src]) return Promise.resolve(imageCache[src]);
+    return new Promise(function(resolve, reject){
+      var img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = function(){ imageCache[src] = img; resolve(img) };
+      img.onerror = function(){ reject(new Error('Obrázek se nepodařilo načíst.')) };
+      img.src = src;
+    });
+  }
+
+  function getVideoEl(){
+    if(videoEl) return videoEl;
+    var v = document.createElement('video');
+    v.crossOrigin = 'anonymous';
+    v.loop = true; v.muted = true; v.playsInline = true; v.preload = 'auto';
+    videoEl = v;
+    return v;
+  }
+
+  function loadVideo(src){
+    var v = getVideoEl();
+    if(v.getAttribute('src') === src && v.readyState >= 2) return Promise.resolve(v);
+    return new Promise(function(resolve, reject){
+      var done = false;
+      function ok(){ if(done) return; done = true; cleanup(); resolve(v) }
+      function fail(){ if(done) return; done = true; cleanup(); reject(new Error('Video se nepodařilo načíst.')) }
+      function cleanup(){ v.removeEventListener('loadeddata', ok); v.removeEventListener('error', fail) }
+      v.addEventListener('loadeddata', ok);
+      v.addEventListener('error', fail);
+      try{ v.pause() }catch(e){}
+      v.src = src;
+      v.load();
+    });
+  }
+
+  function releaseVideo(){
+    if(!videoEl) return;
+    try{ videoEl.pause(); videoEl.removeAttribute('src'); videoEl.load() }catch(e){}
+  }
+
+  // Warm the default (WebP) set so in-headset toggling is instant.
+  VIEWS.forEach(function(v){ if(v.webp) loadImage(v.webp).catch(function(){}) });
+
+  function endSession(){
+    releaseVideo();
+    landing.classList.remove('hidden');
+    loading.classList.remove('visible');
+    session = null; refSpace = null;
+    glBinding = null; equirectLayer = null; currentImg = null; layerW = 0; layerH = 0;
+    mediaBinding = null; videoLayer = null;
+  }
+
+  async function setImageLocation(index){
+    var view = VIEWS[index];
+    var src = (mode === 'hq') ? view.hq : view.webp;
+    var img = await loadImage(src);
+    if(!session) return;
+    currentImg = img;
+    if(!equirectLayer || layerW !== img.width || layerH !== img.height){
+      equirectLayer = glBinding.createEquirectLayer({
+        space: refSpace, viewPixelWidth: img.width, viewPixelHeight: img.height, layout: 'mono'
+      });
+      layerW = img.width; layerH = img.height;
+      session.updateRenderState({ layers: [equirectLayer] });
+    }
+    redrawFrames = 3;           // re-upload over a few frames to cover layer buffering
+  }
+
+  async function setVideoLocation(index){
+    var v = await loadVideo(VIEWS[index].video);
+    if(!session) return;
+    try{ v.currentTime = 0; await v.play() }catch(e){}
+    videoLayer = mediaBinding.createEquirectLayer(v, { space: refSpace, layout: 'mono' });
+    session.updateRenderState({ layers: [videoLayer] });
+  }
+
+  // Switch the displayed location in place, without leaving VR.
+  async function showLocation(index){
+    if(!session || switching) return;
+    switching = true;
+    currentIndex = index;
+    try{
+      if(mode === 'video') await setVideoLocation(currentIndex);
+      else await setImageLocation(currentIndex);
+    }catch(e){ showError(e.message || String(e)); }
+    switching = false;
+  }
+
+  function stepLocation(dir){
+    var list = cycleList();
+    if(list.length < 2) return;
+    var pos = list.indexOf(currentIndex);
+    if(pos < 0) pos = 0;
+    pos = (pos + dir + list.length) % list.length;
+    showLocation(list[pos]);
+  }
+
+  // Poll Quest thumbstick X (xr-standard axes[2]); flick right = next, left = previous.
+  function pollControllers(){
+    if(!session) return;
+    var x = 0, sources = session.inputSources;
+    for(var i = 0; i < sources.length; i++){
+      var gp = sources[i] && sources[i].gamepad;
+      if(!gp || !gp.axes) continue;
+      var ax = gp.axes.length > 2 ? gp.axes[2] : gp.axes[0];
+      if(Math.abs(ax) > Math.abs(x)) x = ax;
+    }
+    if(stickArmed && Math.abs(x) > 0.7){
+      stickArmed = false;
+      stepLocation(x > 0 ? 1 : -1);
+    } else if(Math.abs(x) < 0.3){
+      stickArmed = true;
+    }
+  }
+
+  function onFrame(t, frame){
+    if(!session) return;
+    session.requestAnimationFrame(onFrame);
+    pollControllers();
+    if(isImageMode() && equirectLayer){
+      if(equirectLayer.needsRedraw) redrawFrames = Math.max(redrawFrames, 3);
+      if(redrawFrames > 0 && currentImg){
+        redrawFrames--;
+        var sub = glBinding.getSubImage(equirectLayer, frame);
+        gl.bindTexture(gl.TEXTURE_2D, sub.colorTexture);
+        // Wrap horizontally so the 360° edge blends across the 0°/360° boundary instead of
+        // clamping to the edge – removes the vertical seam the Quest compositor otherwise shows.
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, currentImg);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+      }
+    }
+  }
+
+  async function startSession(modeArg, startIndex){
+    mode = modeArg;
+
+    if(!('xr' in navigator)){
+      showError('WebXR není v tomto prohlížeči podporováno – použijte klasickou verzi.');
+      return;
+    }
+    if(mode === 'video'){
+      if(typeof XRMediaBinding === 'undefined'){
+        showError('Přehrávání videa (WebXR Layers) není podporováno – použijte klasickou verzi.');
+        return;
+      }
+    }else{
+      if(typeof XRWebGLBinding === 'undefined' || !XRWebGLBinding.prototype.createEquirectLayer){
+        showError('WebXR Layers nejsou podporovány – použijte klasickou verzi.');
+        return;
+      }
+    }
+    var supported = false;
+    try{ supported = await navigator.xr.isSessionSupported('immersive-vr') }catch(e){}
+    if(!supported){
+      showError('VR režim není v tomto zařízení dostupný.');
+      return;
+    }
+
+    loading.classList.add('visible');
+
+    // Set up GL up front for image modes (needs an xr-compatible context).
+    if(isImageMode()){
+      var canvas = document.createElement('canvas');
+      gl = canvas.getContext('webgl2', { xrCompatible: true });
+      if(!gl){
+        showError('WebGL2 není k dispozici – použijte klasickou verzi.');
+        loading.classList.remove('visible');
+        return;
+      }
+    }else{
+      // Start loading the clip while the session request is in flight (still within the user gesture).
+      loadVideo(VIEWS[startIndex].video).catch(function(){});
+    }
+
+    try{
+      session = await navigator.xr.requestSession('immersive-vr', {
+        requiredFeatures: ['local-floor', 'layers']
+      });
+    }catch(e){
+      showError('Nelze spustit VR: ' + (e.message || e));
+      loading.classList.remove('visible');
+      return;
+    }
+
+    try{ refSpace = await session.requestReferenceSpace('local-floor'); }
+    catch(e){ refSpace = await session.requestReferenceSpace('local'); }
+
+    if(isImageMode()) glBinding = new XRWebGLBinding(session, gl);
+    else mediaBinding = new XRMediaBinding(session);
+
+    session.addEventListener('end', endSession);
+    session.requestAnimationFrame(onFrame);
+
+    await showLocation(startIndex);
+
+    landing.classList.add('hidden');
+    loading.classList.remove('visible');
+  }
+
+  // Quality selector (applies to the still-image position buttons).
+  document.querySelectorAll('.mode-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.mode-btn').forEach(function(b){ b.classList.remove('active') });
+      btn.classList.add('active');
+    });
+  });
+
+  // Still buttons start a session in the currently selected quality;
+  // animated buttons force video mode regardless of the quality toggle.
+  document.querySelectorAll('.view-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var quality = document.querySelector('.mode-btn.active').dataset.mode;
+      var startMode = btn.dataset.anim ? 'video' : quality;
+      startSession(startMode, indexOfView(btn.dataset.view));
+    });
+  });
+})();
+</script>
+</body>
+</html>

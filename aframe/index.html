@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Větrný park Vojtěchov – VR (klasická verze)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Montserrat',system-ui,sans-serif;background:#efeae2;color:#222}
+    #landing{position:fixed;inset:0;z-index:9999;background:#efeae2;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;transition:opacity .4s;overflow-y:auto}
+    #landing.hidden{opacity:0;pointer-events:none}
+    .logos{display:flex;align-items:center;justify-content:center;gap:48px;margin-bottom:36px;flex-wrap:wrap}
+    .logos img{height:96px;width:auto;object-fit:contain}
+    .logos .noho{height:64px}
+    h1{font-size:clamp(2.2rem,4.6vw,3.6rem);font-weight:800;letter-spacing:.01em;margin-bottom:6px;text-align:center;color:#0a2540}
+    .badge{display:inline-block;background:#0a2540;color:#fff;font-size:.7rem;font-weight:700;letter-spacing:.1em;padding:4px 10px;border-radius:20px;margin-bottom:18px;text-transform:uppercase}
+    .subtitle{color:#777;font-size:1rem;margin-bottom:32px;text-align:center;font-weight:400}
+    .modes{display:inline-flex;background:#e2dccf;border-radius:60px;padding:6px;margin-bottom:28px;gap:4px;flex-wrap:wrap;justify-content:center}
+    .mode-btn{padding:12px 26px;font-size:.95rem;border:none;border-radius:60px;cursor:pointer;color:#0a2540;font-weight:700;background:transparent;font-family:inherit;transition:color .15s;letter-spacing:.02em}
+    .mode-btn.active{color:#fff;background:linear-gradient(135deg,#249e6b,#cedc00);box-shadow:0 4px 16px rgba(36,158,107,.35)}
+    .mode-sub{display:block;font-size:.68rem;font-weight:600;opacity:.75;margin-top:2px}
+    .group{display:flex;flex-direction:column;align-items:center;gap:14px;margin-bottom:28px}
+    .group-label{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#999}
+    .buttons{display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:center}
+    .view-btn{padding:18px 40px;font-size:1.1rem;border:none;border-radius:60px;cursor:pointer;color:#fff;font-weight:700;text-transform:uppercase;letter-spacing:.05em;transition:transform .15s,box-shadow .15s;font-family:inherit;background:linear-gradient(135deg,#249e6b,#cedc00);box-shadow:0 6px 24px rgba(36,158,107,.35)}
+    .view-btn:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(36,158,107,.45)}
+    .view-btn.anim{background:linear-gradient(135deg,#0a2540,#1f6f8b);box-shadow:0 6px 24px rgba(10,37,64,.3)}
+    .view-btn.anim:hover{box-shadow:0 10px 32px rgba(10,37,64,.4)}
+    .hint{margin-top:8px;color:#888;font-size:.85rem;text-align:center;max-width:560px;line-height:1.5}
+    .nav{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:.8rem;color:#888;text-decoration:none}
+    .nav:hover{color:#0a2540}
+    #loading-overlay{position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;color:#fff;font-size:1.2rem}
+    #loading-overlay.visible{display:flex}
+    .spinner{width:44px;height:44px;border:4px solid rgba(255,255,255,.15);border-top-color:#cedc00;border-radius:50%;animation:spin .7s linear infinite;margin-right:14px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .a-enter-vr{display:none!important}
+  </style>
+</head>
+<body>
+
+<div id="landing">
+  <div class="logos">
+    <img class="noho" src="../assets/noho-logo.svg" alt="NOHO" onerror="this.style.display='none'">
+    <img src="../assets/vojtechov-logo.png" alt="Vojtěchov" onerror="this.style.display='none'">
+  </div>
+  <h1>Větrný park Vojtěchov – VR</h1>
+  <span class="badge">Klasická verze · A-Frame</span>
+  <p class="subtitle">Vizualizace větrného parku – statické a animované pohledy</p>
+
+  <div class="group">
+    <span class="group-label">Statické pohledy</span>
+    <div class="modes" role="group" aria-label="Kvalita zobrazení">
+      <button class="mode-btn active" data-mode="webp">Plynulé<span class="mode-sub">WebP · rychlé</span></button>
+      <button class="mode-btn" data-mode="hq">Plná kvalita<span class="mode-sub">WebP · velké</span></button>
+    </div>
+    <div class="buttons">
+      <button class="view-btn" data-view="u-parku">U Parku</button>
+      <button class="view-btn" data-view="spinaci-stanice">Spínací stanice</button>
+      <button class="view-btn" data-view="rozhledna">Rozhledna</button>
+      <button class="view-btn" data-view="pole">Pole</button>
+    </div>
+  </div>
+
+  <div class="group">
+    <span class="group-label">Animované pohledy</span>
+    <div class="buttons">
+      <button class="view-btn anim" data-anim="1" data-view="u-prejezdu">U Přejezdu</button>
+      <button class="view-btn anim" data-anim="1" data-view="spinaci-stanice">Spínací stanice</button>
+      <button class="view-btn anim" data-anim="1" data-view="rozhledna">Rozhledna</button>
+      <button class="view-btn anim" data-anim="1" data-view="pole">Pole</button>
+    </div>
+  </div>
+
+  <p class="hint">Funguje i bez headsetu – na počítači se rozhlížejte tažením myší (Esc = zpět do menu). V headsetu přepínáte mezi pohledy nakloněním páčky ovladače doleva / doprava. Na Questu doporučujeme výchozí verzi s WebXR Layers.</p>
+  <a class="nav" href="../">← výchozí verze (WebXR Layers)</a>
+</div>
+
+<div id="loading-overlay"><div class="spinner"></div><span>Načítání…</span></div>
+
+<script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+
+<a-scene vr-mode-ui="enabled:false" renderer="colorManagement:true;antialias:true" loading-screen="enabled:false" webxr="requiredFeatures:local-floor">
+  <a-assets timeout="60000">
+    <img id="webp-u-parku"         src="../assets/u-parku.webp"         crossorigin="anonymous">
+    <img id="webp-spinaci-stanice" src="../assets/spinaci-stanice.webp" crossorigin="anonymous">
+    <img id="webp-rozhledna"       src="../assets/rozhledna.webp"       crossorigin="anonymous">
+    <img id="webp-pole"            src="../assets/pole.webp"            crossorigin="anonymous">
+  </a-assets>
+  <a-sky id="sky" visible="false" material="shader:flat;side:back"></a-sky>
+  <a-entity id="rig" position="0 1.6 0">
+    <a-camera look-controls="pointerLockEnabled:false" wasd-controls="enabled:false"></a-camera>
+    <a-entity id="left-hand"  oculus-touch-controls="hand:left"  laser-controls="hand:left"></a-entity>
+    <a-entity id="right-hand" oculus-touch-controls="hand:right" laser-controls="hand:right"></a-entity>
+  </a-entity>
+</a-scene>
+
+<!-- Video kept OUTSIDE <a-assets> so an empty (src-less) media element never blocks scene load. -->
+<video id="vid" crossorigin="anonymous" loop muted playsinline preload="auto" style="display:none"></video>
+
+<script>
+(function(){
+  'use strict';
+  var landing = document.getElementById('landing');
+  var loading = document.getElementById('loading-overlay');
+  var scene   = document.querySelector('a-scene');
+  var sky     = document.getElementById('sky');
+  var vid     = document.getElementById('vid');
+
+  var VIEWS = [
+    { id:'u-parku',         webp:'../assets/u-parku.webp',         hq:'../assets/u-parku-hq.webp' },
+    { id:'spinaci-stanice', webp:'../assets/spinaci-stanice.webp', hq:'../assets/spinaci-stanice-hq.webp', video:'../assets/spinaci-stanice.mp4' },
+    { id:'rozhledna',       webp:'../assets/rozhledna.webp',       hq:'../assets/rozhledna-hq.webp',       video:'../assets/rozhledna.mp4' },
+    { id:'pole',            webp:'../assets/pole.webp',            hq:'../assets/pole-hq.webp',            video:'../assets/pole.mp4' },
+    { id:'u-prejezdu',                                                                                  video:'../assets/u-prejezdu.mp4' }
+  ];
+
+  var assetsEl = document.querySelector('a-assets');
+  var mode = 'webp';
+  var currentIndex = 0;
+  var active = false;
+  var stickArmed = true;
+
+  function indexOfView(id){
+    for(var i = 0; i < VIEWS.length; i++) if(VIEWS[i].id === id) return i;
+    return 0;
+  }
+
+  function cycleList(){
+    var out = [];
+    for(var i = 0; i < VIEWS.length; i++){
+      if(mode === 'video' ? VIEWS[i].video : VIEWS[i].webp) out.push(i);
+    }
+    return out;
+  }
+
+  // Lazily create a full-quality <img> the first time it is needed, referenced by selector.
+  function ensureHq(index){
+    var id = 'hq-' + VIEWS[index].id;
+    if(!document.getElementById(id)){
+      var img = document.createElement('img');
+      img.id = id;
+      img.crossOrigin = 'anonymous';
+      img.src = VIEWS[index].hq;
+      assetsEl.appendChild(img);
+    }
+    return '#' + id;
+  }
+
+  // Resolve the selector for the current mode/location and start playback for video.
+  function srcSelectorFor(index){
+    if(mode === 'video'){
+      if(vid.getAttribute('src') !== VIEWS[index].video){
+        vid.src = VIEWS[index].video;
+        vid.load();
+      }
+      vid.play().catch(function(){});
+      return '#vid';
+    }
+    if(mode === 'hq') return ensureHq(index);
+    return '#webp-' + VIEWS[index].id;
+  }
+
+  function applyLocation(index){
+    currentIndex = index;
+    if(mode !== 'video'){ try{ vid.pause() }catch(e){} }
+    sky.setAttribute('material', 'src', srcSelectorFor(currentIndex));
+  }
+
+  function stepLocation(dir){
+    var list = cycleList();
+    if(list.length < 2) return;
+    var pos = list.indexOf(currentIndex);
+    if(pos < 0) pos = 0;
+    applyLocation(list[(pos + dir + list.length) % list.length]);
+  }
+
+  // Quality selector (applies to the still-image position buttons).
+  document.querySelectorAll('.mode-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.mode-btn').forEach(function(b){ b.classList.remove('active') });
+      btn.classList.add('active');
+    });
+  });
+
+  document.querySelectorAll('.view-btn').forEach(function(btn){
+    btn.addEventListener('click', async function(){
+      loading.classList.add('visible');
+      mode = btn.dataset.anim ? 'video' : document.querySelector('.mode-btn.active').dataset.mode;
+      if(!scene.hasLoaded) await new Promise(function(r){ scene.addEventListener('loaded', r, { once:true }) });
+      applyLocation(indexOfView(btn.dataset.view));
+      // Only enter immersive VR when the device actually supports it; otherwise stay in the
+      // desktop 2D view (drag to look around) instead of waiting on a VR request.
+      var vrOK = false;
+      try{ vrOK = navigator.xr && await navigator.xr.isSessionSupported('immersive-vr') }catch(e){}
+      if(vrOK){ try{ await scene.enterVR() }catch(e){ console.warn('VR fallback (2D režim):', e) } }
+      sky.object3D.visible = true;
+      active = true;
+      landing.classList.add('hidden');
+      loading.classList.remove('visible');
+    });
+  });
+
+  // Flick the thumbstick left/right to cycle locations (right = next, left = previous).
+  function onThumbstick(e){
+    if(!active) return;
+    var x = e.detail.x || 0;
+    if(stickArmed && Math.abs(x) > 0.7){
+      stickArmed = false;
+      stepLocation(x > 0 ? 1 : -1);
+    } else if(Math.abs(x) < 0.3){
+      stickArmed = true;
+    }
+  }
+  ['left-hand', 'right-hand'].forEach(function(id){
+    document.getElementById(id).addEventListener('thumbstickmoved', onThumbstick);
+  });
+
+  function backToMenu(){
+    sky.object3D.visible = false;
+    try{ vid.pause() }catch(e){}
+    active = false;
+    landing.classList.remove('hidden');
+  }
+
+  scene.addEventListener('exit-vr', backToMenu);
+
+  // 2D (no headset): Esc returns to the menu.
+  window.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && landing.classList.contains('hidden') && !scene.is('vr-mode')) backToMenu();
+  });
+})();
+</script>
+</body>
+</html>
