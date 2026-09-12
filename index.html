@@ -56,7 +56,7 @@
       <button class="mode-btn" data-mode="hq">Plná kvalita<span class="mode-sub">WebP · velké</span></button>
     </div>
     <div class="buttons">
-      <button class="view-btn" data-view="u-parku">U Parku</button>
+      <button class="view-btn" data-view="u-prejezdu">U Přejezdu</button>
       <button class="view-btn" data-view="spinaci-stanice">Spínací stanice</button>
       <button class="view-btn" data-view="rozhledna">Rozhledna</button>
       <button class="view-btn" data-view="pole">Pole</button>
@@ -90,11 +90,10 @@
 
   // One entry per location. Still views have webp/hq; animated views have video.
   var VIEWS = [
-    { id:'u-parku',         webp:'assets/u-parku.webp',         hq:'assets/u-parku-hq.webp' },
+    { id:'u-prejezdu',      webp:'assets/u-prejezdu.webp',      hq:'assets/u-prejezdu-hq.webp',      video:'assets/u-prejezdu.mp4' },
     { id:'spinaci-stanice', webp:'assets/spinaci-stanice.webp', hq:'assets/spinaci-stanice-hq.webp', video:'assets/spinaci-stanice.mp4' },
     { id:'rozhledna',       webp:'assets/rozhledna.webp',       hq:'assets/rozhledna-hq.webp',       video:'assets/rozhledna.mp4' },
-    { id:'pole',            webp:'assets/pole.webp',            hq:'assets/pole-hq.webp',            video:'assets/pole.mp4' },
-    { id:'u-prejezdu',                                                                               video:'assets/u-prejezdu.mp4' }
+    { id:'pole',            webp:'assets/pole.webp',            hq:'assets/pole-hq.webp',            video:'assets/pole.mp4' }
   ];
 
   var session = null;

@@ -57,7 +57,7 @@
       <button class="mode-btn" data-mode="hq">Plná kvalita<span class="mode-sub">WebP · velké</span></button>
     </div>
     <div class="buttons">
-      <button class="view-btn" data-view="u-parku">U Parku</button>
+      <button class="view-btn" data-view="u-prejezdu">U Přejezdu</button>
       <button class="view-btn" data-view="spinaci-stanice">Spínací stanice</button>
       <button class="view-btn" data-view="rozhledna">Rozhledna</button>
       <button class="view-btn" data-view="pole">Pole</button>
@@ -84,7 +84,7 @@
 
 <a-scene vr-mode-ui="enabled:false" renderer="colorManagement:true;antialias:true" loading-screen="enabled:false" webxr="requiredFeatures:local-floor">
   <a-assets timeout="60000">
-    <img id="webp-u-parku"         src="../assets/u-parku.webp"         crossorigin="anonymous">
+    <img id="webp-u-prejezdu"      src="../assets/u-prejezdu.webp"      crossorigin="anonymous">
     <img id="webp-spinaci-stanice" src="../assets/spinaci-stanice.webp" crossorigin="anonymous">
     <img id="webp-rozhledna"       src="../assets/rozhledna.webp"       crossorigin="anonymous">
     <img id="webp-pole"            src="../assets/pole.webp"            crossorigin="anonymous">
@@ -110,11 +110,10 @@
   var vid     = document.getElementById('vid');
 
   var VIEWS = [
-    { id:'u-parku',         webp:'../assets/u-parku.webp',         hq:'../assets/u-parku-hq.webp' },
+    { id:'u-prejezdu',      webp:'../assets/u-prejezdu.webp',      hq:'../assets/u-prejezdu-hq.webp',      video:'../assets/u-prejezdu.mp4' },
     { id:'spinaci-stanice', webp:'../assets/spinaci-stanice.webp', hq:'../assets/spinaci-stanice-hq.webp', video:'../assets/spinaci-stanice.mp4' },
     { id:'rozhledna',       webp:'../assets/rozhledna.webp',       hq:'../assets/rozhledna-hq.webp',       video:'../assets/rozhledna.mp4' },
-    { id:'pole',            webp:'../assets/pole.webp',            hq:'../assets/pole-hq.webp',            video:'../assets/pole.mp4' },
-    { id:'u-prejezdu',                                                                                  video:'../assets/u-prejezdu.mp4' }
+    { id:'pole',            webp:'../assets/pole.webp',            hq:'../assets/pole-hq.webp',            video:'../assets/pole.mp4' }
   ];
 
   var assetsEl = document.querySelector('a-assets');
